@@ -27,7 +27,7 @@ public class Main {
         if (player == true) {
             playerIcon = "X";
         }
-
+        // TODO: Get user input and verify, else get new input by calling the method again.
         Scanner scanner = new Scanner(System.in);
         System.out.println("Player " + playerIcon + " select a spot on the grid");
         System.out.println("Enter input as X,Y where X and Y is 1-3.");
@@ -38,7 +38,7 @@ public class Main {
             int y_coord = Integer.parseInt(coordinates[1]);
 
             if (x_coord >= 1 && x_coord <= 3 && y_coord >= 1 && y_coord <= 3) {
-
+                // TODO: Verify that the position is allowed.
             } else {
                 System.out.println("Please enter a valid input position.");
                 userInput = scanner.nextLine();
