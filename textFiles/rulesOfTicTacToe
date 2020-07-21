@@ -1,0 +1,6 @@
+The rules of Tic Tac Toe are as following:
+1. The first player to get 3 of its icons in a line wins.
+2. The winning line can be vertical, horizontal or diagonal.
+3. The first player has icon X while the second player has icon O.
+4. The first player can't select the slot in the middle during its first turn.
+5. If no player has won when the board is full, the game ends in a draw.
