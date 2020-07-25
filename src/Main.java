@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,11 +16,23 @@ public class Main {
     static boolean gameComplete = false;
     static int roundCounter = 0;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Create the game board.
         playArea = createEmptyBoard();
         // Print initial board
-        printGameBoard();
+
+        ////////////
+
+        // GUI
+
+        //GameBoard game = new GameBoard();
+        //game.main(null);
+        GameBoardTest gameTest = new GameBoardTest();
+        gameTest.main(null);
+
+        ////////////
+
+        /*printGameBoard();
         // While no winner is found, loop.
         while (!gameComplete) {
             // Get user position if board not full (then ends game).
@@ -31,7 +44,7 @@ public class Main {
             // Increase the round counter to allow check if game board is full without a winner.
             roundCounter++;
 
-        }
+        }*/
     }
 
     public static ArrayList<ArrayList<Character>> createEmptyBoard(){
