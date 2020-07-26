@@ -65,11 +65,13 @@
         <children>
           <component id="8ae0b" class="javax.swing.JLabel" binding="gameBoardLabel">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <maximum-size width="1" height="1"/>
+              </grid>
             </constraints>
             <properties>
               <enabled value="true"/>
-              <text value=""/>
+              <text value="Lorem ipsum"/>
             </properties>
           </component>
           <hspacer id="3d49b">

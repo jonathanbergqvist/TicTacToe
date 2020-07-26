@@ -25,10 +25,10 @@ public class Main {
 
         // GUI
 
-        //GameBoard game = new GameBoard();
-        //game.main(null);
-        GameBoardTest gameTest = new GameBoardTest();
-        gameTest.main(null);
+        GameBoard game = new GameBoard();
+        game.main(null);
+        //GameBoardTest gameTest = new GameBoardTest();
+        //gameTest.main(null);
 
         ////////////
 

@@ -11,7 +11,7 @@ public class GameBoardTest {
 
     private JPanel testPanel;
     private JLabel testLabel;
-    private final String boardFilepath = "gameFiles/tictactoeboard.png";
+    private final static String boardFilepath = "gameFiles/tictactoeboard.png";
 
 
     public GameBoardTest() {
@@ -27,7 +27,7 @@ public class GameBoardTest {
         testPanel.add(jl);
 */
         showJFrame();
-        //DisplayImage(this.testPanel, this.boardFilepath);
+        DisplayImage(this.testPanel, this.boardFilepath);
 
     }
 
@@ -35,7 +35,7 @@ public class GameBoardTest {
         JFrame frame = new JFrame("Tic Tac Toe");
         frame.setContentPane(new GameBoardTest().testPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new JLabel(new ImageIcon(GameBoardTest.class.getResource("tictactoeboard.png"))));
+        frame.add(new JLabel(new ImageIcon(GameBoardTest.class.getResource("tictactoeboard.png")))); // THIS WORKS!
         frame.pack();
         frame.setVisible(true);
         frame.setSize(new Dimension(400, 400));
@@ -48,10 +48,10 @@ public class GameBoardTest {
     private static void DisplayImage(JPanel jp, String url) {
         JLabel jl = new JLabel();
         //String file = GameBoardTest.class.getResource(url).getPath();
-        System.out.println("PATH: " + GameBoardTest.class.getResource(url).getPath());
+        System.out.println("PATH: " + GameBoardTest.class.getResource(boardFilepath).getPath());
         jl.setIcon(new javax.swing.ImageIcon(GameBoardTest.class.getResource(url)));
         jp.add(jl);
-        jp.setVisible(true);
+//        jp.setVisible(true);
     }
 
 }

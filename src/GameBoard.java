@@ -16,28 +16,48 @@ public class GameBoard extends JPanel {
     private JLabel gameBoardLabel;
     private JPanel startPagePanel;
     private JPanel gameBoardPanel;
+    private JFrame frame;
+    private final static String boardFilepath = "tictactoeboard.png";
+
 
 
     public GameBoard() {
         initialize();
     }
 
-    public static void main(String[] args) {
-        showJFrame();
+    public void main(String[] args) {
+        System.out.println("SHOW JFRAME");
+        this.showJFrame();
     }
 
-
-
-    public static void showJFrame() {
-        JFrame frame = new JFrame("Tic Tac Toe");
-        frame.setContentPane(new GameBoard().startPagePanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setSize(new Dimension(400, 400));
+    public void showJFrame() {
+        this.frame = new JFrame("Tic Tac Toe");
+        this.frame.setContentPane(this.startPagePanel);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.pack();
+        this.frame.setVisible(true);
+        this.frame.setSize(new Dimension(400, 400));
         // Center window
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation((dim.width/2)-frame.getWidth()/2, (dim.height/2)-frame.getHeight()/2);
+        this.frame.setLocation((dim.width/2)-this.frame.getWidth()/2, (dim.height/2)-this.frame.getHeight()/2);
+
+    }
+
+    public void showJFrame(JPanel contentPane) {
+        this.frame = new JFrame("Tic Tac Toe");
+        if (contentPane == null) {
+            this.frame.setContentPane(this.startPagePanel);
+        } else {
+            this.frame.setContentPane(contentPane);
+        }
+        this.frame.setContentPane(this.startPagePanel);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.pack();
+        this.frame.setVisible(true);
+        this.frame.setSize(new Dimension(400, 400));
+        // Center window
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.frame.setLocation((dim.width/2)-this.frame.getWidth()/2, (dim.height/2)-this.frame.getHeight()/2);
 
     }
 
@@ -48,7 +68,7 @@ public class GameBoard extends JPanel {
             startAGameButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    System.out.println("START GAME");
                     startGame();
                 }
             });
@@ -57,15 +77,35 @@ public class GameBoard extends JPanel {
         }
     }
 
+    private static void DisplayImage(JPanel jp, String url) {
+        JLabel jl = new JLabel();
+        //System.out.println("PATH: " + GameBoardTest.class.getResource(boardFilepath).getPath());
+        jl.setIcon(new javax.swing.ImageIcon(GameBoardTest.class.getResource(url)));
+        jp.add(jl);
+    }
+
     private void startGame() {
         try {
-            //startPagePanel.setVisible(false);
+            this.startPagePanel.setVisible(false);
             //BufferedImage image = ImageIO.read(new File("gameFiles/tictactoeboard.png"));
             //ImageIcon icon = new ImageIcon(getClass().getResource("gameFiles/tictactoeboard.png"));
-            JLabel gameBoardLabel = new JLabel("gameFiles/tictactoeboard.png");
+            //JLabel gameBoardLabel = new JLabel("gameFiles/tictactoeboard.png");
             //gameBoardLabel.setIcon(icon);
-            gameBoardPanel.add(gameBoardLabel);
-            gameBoardPanel.setVisible(true);
+            //gameBoardPanel.add(gameBoardLabel);
+            this.gameBoardPanel = new JPanel();
+            DisplayImage(this.gameBoardPanel, this.boardFilepath);
+            this.gameBoardPanel.setVisible(true);
+            this.frame.setContentPane(this.gameBoardPanel);
+            //this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //this.frame.pack();
+            //this.frame.setVisible(true);
+            //this.frame.setSize(new Dimension(400, 400));
+            // Center window
+            Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+            this.frame.setLocation((dim.width/2)-this.frame.getWidth()/2, (dim.height/2)-this.frame.getHeight()/2);
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
