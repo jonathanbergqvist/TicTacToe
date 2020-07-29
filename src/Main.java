@@ -15,6 +15,7 @@ public class Main {
     static int selected_y_cord;
     static boolean gameComplete = false;
     static int roundCounter = 0;
+    static GameBoard game;
 
     public static void main(String[] args) throws IOException {
         // Create the game board.
@@ -25,7 +26,7 @@ public class Main {
 
         // GUI
 
-        GameBoard game = new GameBoard();
+        game = new GameBoard();
         game.main(null);
         //GameBoardTest gameTest = new GameBoardTest();
         //gameTest.main(null);
@@ -129,6 +130,19 @@ public class Main {
         while (!selectedUserInput) {
             System.out.println("The input was not valid, please try again.");
             selectedUserInput = userInput(playerIcon);
+        }
+    }
+
+    public static boolean userInputGUI(String coordinates, Character player) {
+        try {
+            String[] splitCoordinates = coordinates.split(",");
+            selected_x_cord = Integer.parseInt(splitCoordinates[0]);
+            selected_y_cord = Integer.parseInt(splitCoordinates[1]);
+            playArea.get(selected_y_cord-1).set(selected_x_cord-1, player);
+
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
