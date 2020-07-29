@@ -13,9 +13,17 @@ public class GameBoard extends JPanel {
     private JLabel header;
     private JTextArea theRulesOfTicTextArea;
     private JButton startAGameButton;
-    private JLabel gameBoardLabel;
     private JPanel startPagePanel;
     private JPanel gameBoardPanel;
+    private JButton button11;
+    private JButton button12;
+    private JButton button13;
+    private JButton button21;
+    private JButton button22;
+    private JButton button23;
+    private JButton button31;
+    private JButton button32;
+    private JButton button33;
     private JFrame frame;
     private final static String boardFilepath = "tictactoeboard.png";
     private final static Integer windowWidth = 400;
@@ -25,6 +33,7 @@ public class GameBoard extends JPanel {
 
     public GameBoard() {
         initialize();
+
     }
 
     public void main(String[] args) {
@@ -77,11 +86,21 @@ public class GameBoard extends JPanel {
             DisplayImage(this.gameBoardPanel, this.boardFilepath);
             this.gameBoardPanel.setVisible(true);
             this.frame.setContentPane(this.gameBoardPanel);
+            awaitUserInput();
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void awaitUserInput() {
+        button11.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
 
