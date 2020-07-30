@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class GameBoard extends JPanel {
 
-    private JLabel header;
+    private JLabel header; // Used by GUI.
     private JTextArea theRulesOfTicTextArea;
     private JButton startAGameButton;
     private JPanel startPagePanel;
@@ -34,6 +34,7 @@ public class GameBoard extends JPanel {
 
 
     // CUSTOM CLASSES /////////////////////
+    // Get the game board image as JPanel
     class GamePanel extends JPanel {
         private Image background;
         public GamePanel(String fileName) throws IOException {
@@ -50,7 +51,8 @@ public class GameBoard extends JPanel {
 
     /////////////////////////////////
 
-    public class GameBoardButton extends JButton{
+    public class GameBoardButton extends JButton {
+        // Class for the different game board slots/buttons.
 
         String coordinates;
         Image oImage;
@@ -58,22 +60,24 @@ public class GameBoard extends JPanel {
         Image playerIcon;
         Character playerCharacter;
 
-
-        ActionListener buttonListener = new ActionListener() {
+        // Create listener for pressing a game board button.
+        public ActionListener buttonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Set selected button and enter coordinates
-
+                // To deny start in middle of board.
                 if (roundCounter == 0 && coordinates.equals("2,2")) {
                     return;
                 }
 
-
+                // Setup the button press.
                 setContentAreaFilled(false);
                 setBorderPainted(false);
+
+                // Make sure the button can't be pressed again.
                 removeMouseListener(mouseListener);
                 removeActionListener(buttonListener);
 
+                // Check which users turn.
                 if (roundCounter % 2 == 0) {
                     playerIcon = xImage;
                     playerCharacter = 'X';
@@ -81,41 +85,55 @@ public class GameBoard extends JPanel {
                     playerIcon = oImage;
                     playerCharacter = 'O';
                 }
-                setIcon(new ImageIcon(playerIcon));
+                setIcon(new ImageIcon(playerIcon)); // The player icon, i.e. X or O.
 
+                // Get the user selected game board slot and update the board.
                 Main.userInputGUI(coordinates, playerCharacter);
+
+                // Check if the game has a winner.
                 Main.checkIfVictory();
 
-                if (Main.gameComplete) {
-                    // TODO: Show a winner message allowing no more moves. Remove System.exit(0).
+                // The game has a winner.
+                if (Main.gameComplete == true) {
+                    try {
+                        // Start the popup end screen.
+                        endGameScreen(true, playerCharacter);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
 
-                    System.exit(0);
+                // The game is a tie.
                 } else if (roundCounter == 8 && !Main.gameComplete) {
-                    // TODO: Show a tie message allowing no more moves. Remove System.exit(0).
-
-                    System.out.println("Game over. No Winner.");
-                    System.exit(0);
+                    try {
+                        // Start the popup end screen.
+                        endGameScreen(false, playerCharacter);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                 }
+
+                // Update the round counter.
                 roundCounter++;
 
             }
         };
 
-        MouseAdapter mouseListener = new MouseAdapter() {
+        // Create MouseAdapter to handle mouse hovering on game board.
+        public MouseAdapter mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setContentAreaFilled(true); // Sets the color
+                setContentAreaFilled(true); // Hold the color on the hovered game board slot
                 setBackground(Color.BLACK);
-                setForeground(Color.BLACK);
-
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
+                // Don't hold a color to the non-hovered game board slot
                 setContentAreaFilled(false);
             }
         };
 
+        // Constructor of the custom JButton, i.e. the game board slots.
         GameBoardButton(String coordinates){
             super();
             setBorderPainted(false);
@@ -124,8 +142,8 @@ public class GameBoard extends JPanel {
             addActionListener(buttonListener);
             addMouseListener(mouseListener);
             this.coordinates = coordinates;
-            //System.out.println("PATH: " + new File(oIconFilepath).getAbsolutePath());
 
+            // Get the images for the player icons.
             try {
                 oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(130, 130, Image.SCALE_SMOOTH);
                 xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(130, 130, Image.SCALE_SMOOTH);
@@ -138,6 +156,7 @@ public class GameBoard extends JPanel {
 
     /////////////////////////////////
 
+    // Constructor
     public GameBoard() {
         initialize();
     }
@@ -186,11 +205,11 @@ public class GameBoard extends JPanel {
 
     private void startGame() {
         try {
+            // Make start page non-visible.
             this.startPagePanel.setVisible(false);
 
+            // Create the game buttons and add them to the JPanel.
             this.button11 = new GameBoardButton("1,1");
-            //String coor = ((GameBoardButton) this.button11).getCoordinates();
-            //System.out.println("COOR: " + coor);
             this.gameBoardPanel.add(this.button11);
             this.button12 = new GameBoardButton("1,2");
             this.gameBoardPanel.add(this.button12);
@@ -209,38 +228,46 @@ public class GameBoard extends JPanel {
             this.button33 = new GameBoardButton("3,3");
             this.gameBoardPanel.add(this.button33);
 
+            // Set the game panel to visible.
             this.gameBoardPanel.setVisible(true);
 
+            // Add the game panel to the JFrame.
             this.frame.setContentPane(this.gameBoardPanel);
-
-            //awaitUserInput();
-
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void awaitUserInput() {
+    private void endGameScreen(boolean winner, Character player) throws IOException {
 
+        // Make the game buttons non-enabled, i.e. making them non-clickable when game is over (in case user closes the popup with the top-right X button).
+        Component[] components = gameBoardPanel.getComponents();
+        for (Component component : components) {
+            component.setEnabled(false);
+        }
 
+        JLabel gameEndingText = new JLabel(); // Create JLabel to add text to.
+        JOptionPane gameEndingPopup = new JOptionPane(); // Create a JOptionPane popup screen.
 
-        /*this.button11.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("BUTTON FOUND");
-            }
-        });
+        // If the game ended with a winner.
+        if (winner) {
+            gameEndingText.setText("The winner is player " + player + "!");
+        // If the game ended in a tie.
+        } else {
+            gameEndingText.setText("The game ended in a tie!");
+        }
 
-        button11.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                button11.setContentAreaFilled(true);
-                button11.setBackground(Color.BLACK);
-            }
-            public void mouseExited(MouseEvent e) {
-                button11.setContentAreaFilled(false);
+        // Design the popup screen.
+        Object[] options = {"End game"};
+        gameEndingPopup.setOptions(options);
+        int answer = gameEndingPopup.showOptionDialog(null, gameEndingText, "Tic Tac Toe", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-            }
-        });*/
+        // Handle the popup button press.
+        if (answer == JOptionPane.YES_OPTION) { // 0 == 0
+            // End software
+            System.out.println("END SOFTWARE");
+            System.exit(0);
+        }
     }
 }

@@ -17,22 +17,24 @@ public class Main {
     static int roundCounter = 0;
     static GameBoard game;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        playAGame();
+    }
+
+
+    public static void playAGame() {
         // Create the game board.
         playArea = createEmptyBoard();
-        // Print initial board
 
         ////////////
 
         // GUI
-
         game = new GameBoard();
         game.main(null);
-        //GameBoardTest gameTest = new GameBoardTest();
-        //gameTest.main(null);
 
         ////////////
 
+        // Print initial board
         /*printGameBoard();
         // While no winner is found, loop.
         while (!gameComplete) {
@@ -135,6 +137,7 @@ public class Main {
 
     public static boolean userInputGUI(String coordinates, Character player) {
         try {
+            // Set the user input with user icon.
             String[] splitCoordinates = coordinates.split(",");
             selected_x_cord = Integer.parseInt(splitCoordinates[0]);
             selected_y_cord = Integer.parseInt(splitCoordinates[1]);
