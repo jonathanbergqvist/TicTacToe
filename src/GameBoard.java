@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GameBoard extends JPanel {
 
@@ -13,31 +14,27 @@ public class GameBoard extends JPanel {
     private JButton startAGameButton;
     private JPanel startPagePanel;
     private JPanel gameBoardPanel;
-    private JButton button11;
-    private JButton button12;
-    private JButton button13;
-    private JButton button21;
-    private JButton button22;
-    private JButton button23;
-    private JButton button31;
-    private JButton button32;
-    private JButton button33;
     private JFrame frame;
     private final static String rulesFilepath = "gameFiles/rulesOfTicTacToe";
-    private final static String boardFilepath = "gameFiles/tictactoeboard.png";
-    private final static String oIconFilepath = "gameFiles/tictactoeO.png";
-    private final static String xIconFilepath = "gameFiles/tictactoeX.png";
+    private final static String boardPieceFilepath = "gameFiles/tictactoeEmpty.png";
+    private final static String oIconFilepath = "gameFiles/tictactoeOBoard.png";
+    private final static String xIconFilepath = "gameFiles/tictactoeXBoard.png";
+    private static ImageIcon boardIcon;
     private final static Integer windowWidth = 400;
     private final static Integer windowHeight = 400;
     int roundCounter = 0;
 
-
-
     // CUSTOM CLASSES /////////////////////
     // Get the game board image as JPanel
     class GamePanel extends JPanel {
-        private Image background;
-        public GamePanel(String fileName) throws IOException {
+        //private Image background;
+
+        public GamePanel() {
+            setBackground(Color.BLACK);
+        }
+
+        // Used if single image is used as background.
+        /*public GamePanel(String fileName) throws IOException {
             background = ImageIO.read(new File(fileName)).getScaledInstance(windowWidth-13, windowHeight-29, Image.SCALE_SMOOTH);
         }
 
@@ -45,7 +42,7 @@ public class GameBoard extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(background, 0, 0, this);
-        }
+        }*/
 
     }
 
@@ -94,7 +91,7 @@ public class GameBoard extends JPanel {
                 Main.checkIfVictory();
 
                 // The game has a winner.
-                if (Main.gameComplete == true) {
+                if (Main.gameComplete) {
                     try {
                         // Start the popup end screen.
                         endGameScreen(true, playerCharacter);
@@ -122,19 +119,19 @@ public class GameBoard extends JPanel {
         public MouseAdapter mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setContentAreaFilled(true); // Hold the color on the hovered game board slot
-                setBackground(Color.BLACK);
+                // Hovering color
+                setIcon(new ImageIcon(String.valueOf(Color.BLACK)));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 // Don't hold a color to the non-hovered game board slot
-                setContentAreaFilled(false);
+                setIcon(boardIcon);
             }
         };
 
         // Constructor of the custom JButton, i.e. the game board slots.
-        GameBoardButton(String coordinates){
+        GameBoardButton(String coordinates) {
             super();
             setBorderPainted(false);
             setContentAreaFilled(false);
@@ -145,12 +142,17 @@ public class GameBoard extends JPanel {
 
             // Get the images for the player icons.
             try {
-                oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(130, 130, Image.SCALE_SMOOTH);
-                xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+                // Set board icon as own variable as it's used in in MouseListener.
+                boardIcon = new ImageIcon(ImageIO.read(new File(boardPieceFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH));
+                setIcon(boardIcon);
+
+                oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH);
+                xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH);
 
             } catch (Exception e) {
                 System.out.println(e);
             }
+
         }
     }
 
@@ -184,7 +186,7 @@ public class GameBoard extends JPanel {
         try {
 
             // Create the game board.
-            this.gameBoardPanel = new GamePanel(boardFilepath);
+            this.gameBoardPanel = new GamePanel();
             this.gameBoardPanel.setLayout(new GridLayout(3,3));
 
             // Read the text file onto the start/rules page.
@@ -208,25 +210,18 @@ public class GameBoard extends JPanel {
             // Make start page non-visible.
             this.startPagePanel.setVisible(false);
 
-            // Create the game buttons and add them to the JPanel.
-            this.button11 = new GameBoardButton("1,1");
-            this.gameBoardPanel.add(this.button11);
-            this.button12 = new GameBoardButton("1,2");
-            this.gameBoardPanel.add(this.button12);
-            this.button13 = new GameBoardButton("1,3");
-            this.gameBoardPanel.add(this.button13);
-            this.button21 = new GameBoardButton("2,1");
-            this.gameBoardPanel.add(this.button21);
-            this.button22 = new GameBoardButton("2,2");
-            this.gameBoardPanel.add(this.button22);
-            this.button23 = new GameBoardButton("2,3");
-            this.gameBoardPanel.add(this.button23);
-            this.button31 = new GameBoardButton("3,1");
-            this.gameBoardPanel.add(this.button31);
-            this.button32 = new GameBoardButton("3,2");
-            this.gameBoardPanel.add(this.button32);
-            this.button33 = new GameBoardButton("3,3");
-            this.gameBoardPanel.add(this.button33);
+            // Create an ArrayList of GameBoardButtons.
+            int buttonCounter = 0;
+            ArrayList<GameBoardButton> buttons = new ArrayList<>();
+            for (int i = 1; i <= 3; i++) {
+                for (int j = 1; j <= 3; j++) {
+                    String coordinate = i + "," + j;
+                    GameBoardButton newButton = new GameBoardButton(coordinate);
+                    buttons.add(newButton);
+                    this.gameBoardPanel.add(buttons.get(buttonCounter));
+                    buttonCounter++;
+                }
+            }
 
             // Set the game panel to visible.
             this.gameBoardPanel.setVisible(true);
@@ -255,7 +250,7 @@ public class GameBoard extends JPanel {
             gameEndingText.setText("The winner is player " + player + "!");
         // If the game ended in a tie.
         } else {
-            gameEndingText.setText("The game ended in a tie!");
+            gameEndingText.setText("The game ended in a draw!");
         }
 
         // Design the popup screen.
