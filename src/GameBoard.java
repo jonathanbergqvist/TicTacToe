@@ -22,28 +22,19 @@ public class GameBoard extends JPanel {
     private static ImageIcon boardIcon;
     private final static Integer windowWidth = 400;
     private final static Integer windowHeight = 400;
+    private int gameBoardSize;
     int roundCounter = 0;
+
+    public int getGameBoardSize() {
+        return gameBoardSize;
+    }
 
     // CUSTOM CLASSES /////////////////////
     // Get the game board image as JPanel
     class GamePanel extends JPanel {
-        //private Image background;
-
         public GamePanel() {
             setBackground(Color.BLACK);
         }
-
-        // Used if single image is used as background.
-        /*public GamePanel(String fileName) throws IOException {
-            background = ImageIO.read(new File(fileName)).getScaledInstance(windowWidth-13, windowHeight-29, Image.SCALE_SMOOTH);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(background, 0, 0, this);
-        }*/
-
     }
 
     /////////////////////////////////
@@ -59,11 +50,17 @@ public class GameBoard extends JPanel {
 
         // Create listener for pressing a game board button.
         public ActionListener buttonListener = new ActionListener() {
+            private int localGameBoardSize = getGameBoardSize();
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                // To deny start in middle of board.
-                if (roundCounter == 0 && coordinates.equals("2,2")) {
-                    return;
+                // To deny start in middle of board when possible.
+                if (localGameBoardSize % 2 != 0) {
+                    int middleCoordinate = (localGameBoardSize / 2) + 1;
+                    String middleCoordinateString = middleCoordinate + "," + middleCoordinate;
+                    if (roundCounter == 0 && coordinates.equals(middleCoordinateString)) {
+                        return;
+                    }
                 }
 
                 // Setup the button press.
@@ -90,6 +87,9 @@ public class GameBoard extends JPanel {
                 // Check if the game has a winner.
                 Main.checkIfVictory();
 
+                // Get the full board integer.
+                int tieInteger = gameBoardSize * gameBoardSize - 1;
+
                 // The game has a winner.
                 if (Main.gameComplete) {
                     try {
@@ -100,7 +100,7 @@ public class GameBoard extends JPanel {
                     }
 
                 // The game is a tie.
-                } else if (roundCounter == 8 && !Main.gameComplete) {
+                } else if (roundCounter == tieInteger && !Main.gameComplete) {
                     try {
                         // Start the popup end screen.
                         endGameScreen(false, playerCharacter);
@@ -133,6 +133,7 @@ public class GameBoard extends JPanel {
         // Constructor of the custom JButton, i.e. the game board slots.
         GameBoardButton(String coordinates) {
             super();
+            int boardSize = getGameBoardSize();
             setBorderPainted(false);
             setContentAreaFilled(false);
             setFocusPainted(false);
@@ -143,11 +144,10 @@ public class GameBoard extends JPanel {
             // Get the images for the player icons.
             try {
                 // Set board icon as own variable as it's used in in MouseListener.
-                boardIcon = new ImageIcon(ImageIO.read(new File(boardPieceFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH));
+                boardIcon = new ImageIcon(ImageIO.read(new File(boardPieceFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH));
                 setIcon(boardIcon);
-
-                oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH);
-                xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(windowWidth/3, windowHeight/3, Image.SCALE_SMOOTH);
+                oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(windowWidth/boardSize, windowHeight/boardSize, Image.SCALE_SMOOTH);
+                xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(windowWidth/boardSize, windowHeight/boardSize, Image.SCALE_SMOOTH);
 
             } catch (Exception e) {
                 System.out.println(e);
@@ -164,7 +164,6 @@ public class GameBoard extends JPanel {
     }
 
     public void main(String[] args) {
-        System.out.println("SHOW JFRAME");
         this.showJFrame();
     }
 
@@ -184,11 +183,6 @@ public class GameBoard extends JPanel {
 
     private void initialize() {
         try {
-
-            // Create the game board.
-            this.gameBoardPanel = new GamePanel();
-            this.gameBoardPanel.setLayout(new GridLayout(3,3));
-
             // Read the text file onto the start/rules page.
             theRulesOfTicTextArea.read(new FileReader(rulesFilepath),null);
 
@@ -196,7 +190,6 @@ public class GameBoard extends JPanel {
             this.startAGameButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("START GAME");
                     startGame();
                 }
             });
@@ -207,14 +200,27 @@ public class GameBoard extends JPanel {
 
     private void startGame() {
         try {
+            this.gameBoardSize = setGameBoardSize();
+            for (int i = 0; i < this.gameBoardSize; i++) {
+                Main.xPlayerReference = Main.xPlayerReference + "X";
+                Main.oPlayerReference = Main.oPlayerReference + "O";
+            }
+
+            // Create the backend game board.
+            Main.playArea = Main.createEmptyBoard();
+
+            // Create the frontend game board.
+            this.gameBoardPanel = new GamePanel();
+            this.gameBoardPanel.setLayout(new GridLayout(this.gameBoardSize,this.gameBoardSize));
+
             // Make start page non-visible.
             this.startPagePanel.setVisible(false);
 
             // Create an ArrayList of GameBoardButtons.
             int buttonCounter = 0;
             ArrayList<GameBoardButton> buttons = new ArrayList<>();
-            for (int i = 1; i <= 3; i++) {
-                for (int j = 1; j <= 3; j++) {
+            for (int i = 1; i <= this.gameBoardSize; i++) {
+                for (int j = 1; j <= this.gameBoardSize; j++) {
                     String coordinate = i + "," + j;
                     GameBoardButton newButton = new GameBoardButton(coordinate);
                     buttons.add(newButton);
@@ -232,6 +238,15 @@ public class GameBoard extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private int setGameBoardSize() {
+        JOptionPane sizeOption = new JOptionPane();
+        JLabel message = new JLabel("Select a board size between 3 - 9.");
+        Object[] possibleGameSizes = {3, 4, 5, 6, 7, 8, 9};
+        int userChoice = (Integer) sizeOption.showInputDialog(null, message, "", JOptionPane.PLAIN_MESSAGE, null, possibleGameSizes, possibleGameSizes[0]);
+
+        return userChoice;
     }
 
     private void endGameScreen(boolean winner, Character player) throws IOException {
@@ -261,7 +276,6 @@ public class GameBoard extends JPanel {
         // Handle the popup button press.
         if (answer == JOptionPane.YES_OPTION) { // 0 == 0
             // End software
-            System.out.println("END SOFTWARE");
             System.exit(0);
         }
     }
