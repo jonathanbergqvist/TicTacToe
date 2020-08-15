@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 public class GameBoard extends JPanel {
 
@@ -15,13 +17,14 @@ public class GameBoard extends JPanel {
     private JPanel startPagePanel;
     private JPanel gameBoardPanel;
     private JFrame frame;
-    private final static String rulesFilepath = "gameFiles/rulesOfTicTacToe";
-    private final static String boardPieceFilepath = "gameFiles/tictactoeEmpty.png";
-    private final static String oIconFilepath = "gameFiles/tictactoeOBoard.png";
-    private final static String xIconFilepath = "gameFiles/tictactoeXBoard.png";
+    private static String rulesFilepath;
+    private static String boardPieceFilepath;
+    private static String oIconFilepath;
+    private static String xIconFilepath;
     private static ImageIcon boardIcon;
     private final static Integer windowWidth = 400;
     private final static Integer windowHeight = 400;
+    private final static String gameFileDirectory = "gameFiles" + File.separator;
     private int gameBoardSize;
     int roundCounter = 0;
 
@@ -47,6 +50,31 @@ public class GameBoard extends JPanel {
         Image xImage;
         Image playerIcon;
         Character playerCharacter;
+
+        // Constructor of the custom JButton, i.e. the game board slots.
+        GameBoardButton(String coordinates) {
+            super();
+            int boardSize = getGameBoardSize();
+            setBorderPainted(false);
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+            addActionListener(buttonListener);
+            addMouseListener(mouseListener);
+            this.coordinates = coordinates;
+
+            // Get the images for the player icons.
+            try {
+                // Set board icon as own variable as it's used in in MouseListener.
+                boardIcon = new ImageIcon(ImageIO.read(new File(gameFileDirectory + boardPieceFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH));
+                setIcon(boardIcon);
+                oImage = ImageIO.read(new File(gameFileDirectory + oIconFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
+                xImage = ImageIO.read(new File(gameFileDirectory + xIconFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
+
+            } catch (Exception e) {
+                System.out.println(e.fillInStackTrace());
+            }
+
+        }
 
         // Create listener for pressing a game board button.
         public ActionListener buttonListener = new ActionListener() {
@@ -130,30 +158,7 @@ public class GameBoard extends JPanel {
             }
         };
 
-        // Constructor of the custom JButton, i.e. the game board slots.
-        GameBoardButton(String coordinates) {
-            super();
-            int boardSize = getGameBoardSize();
-            setBorderPainted(false);
-            setContentAreaFilled(false);
-            setFocusPainted(false);
-            addActionListener(buttonListener);
-            addMouseListener(mouseListener);
-            this.coordinates = coordinates;
 
-            // Get the images for the player icons.
-            try {
-                // Set board icon as own variable as it's used in in MouseListener.
-                boardIcon = new ImageIcon(ImageIO.read(new File(boardPieceFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH));
-                setIcon(boardIcon);
-                oImage = ImageIO.read(new File(oIconFilepath)).getScaledInstance(windowWidth/boardSize, windowHeight/boardSize, Image.SCALE_SMOOTH);
-                xImage = ImageIO.read(new File(xIconFilepath)).getScaledInstance(windowWidth/boardSize, windowHeight/boardSize, Image.SCALE_SMOOTH);
-
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-
-        }
     }
 
     /////////////////////////////////
@@ -183,8 +188,22 @@ public class GameBoard extends JPanel {
 
     private void initialize() {
         try {
+            //ResourceBundle gameFiles = ResourceBundle.getBundle("gameFiles");
+            // TODO: Fix general path to resources when running JAR from terminal
+            rulesFilepath = getClass().getClassLoader().getResource("rulesOfTicTacToe").getPath();
+            rulesFilepath = rulesFilepath.substring(rulesFilepath.lastIndexOf("/") + 1);
+
+            boardPieceFilepath = getClass().getClassLoader().getResource("tictactoeEmpty.png").getPath();
+            boardPieceFilepath = boardPieceFilepath.substring(boardPieceFilepath.lastIndexOf("/") + 1);
+
+            oIconFilepath = getClass().getClassLoader().getResource("tictactoeOBoard.png").getPath();
+            oIconFilepath = oIconFilepath.substring(oIconFilepath.lastIndexOf("/") + 1);
+
+            xIconFilepath = getClass().getClassLoader().getResource("tictactoeXBoard.png").getPath();
+            xIconFilepath = xIconFilepath.substring(xIconFilepath.lastIndexOf("/") + 1);
+
             // Read the text file onto the start/rules page.
-            theRulesOfTicTextArea.read(new FileReader(rulesFilepath),null);
+            theRulesOfTicTextArea.read(new FileReader(gameFileDirectory + rulesFilepath),null);
 
             // Await the start button.
             this.startAGameButton.addActionListener(new ActionListener() {
