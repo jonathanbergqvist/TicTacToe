@@ -23,9 +23,8 @@ public class GameBoard extends JPanel {
     private static ImageIcon boardIcon;
     private final static Integer windowWidth = 400;
     private final static Integer windowHeight = 400;
-    //private final static String gameFileDirectory = "";//""gameFiles" + File.separator;
     private int gameBoardSize;
-    int roundCounter = 0;
+    private int roundCounter = 0;
 
     public int getGameBoardSize() {
         return gameBoardSize;

@@ -9,7 +9,6 @@ public class Main {
     static int selected_x_cord;
     static int selected_y_cord;
     static boolean gameComplete = false;
-    static int roundCounter = 0;
     static GameBoard game;
 
     public static void main(String[] args) {
@@ -41,37 +40,48 @@ public class Main {
 
         // The Strings for rows, columns and diagonals was inspired by MeneXia (Xavi Ablaza) at https://gist.github.com/xaviablaza-zz/3844825
 
-        // TODO: Check why victory on middle row won't register
-        // Check rows
-        System.out.println(roundCounter);
+        /*
+        The backend gameboard contains ArrayLists as a matrix numbered as (example 3x3 board): [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8]
+        ]
+
+        The frontend gameboard matrix correspons to the backend gameboard matrix as: [
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8]
+        ]
+
+        As can be seen, the matrixes are each others corresponding matrix transpose.
+        */
+
+        // Check backend rows
         for (ArrayList<Character> line : playArea) {
-            System.out.println(line);
             String row = "";
             for (Character singleCharacter : line) {
                 row = row + singleCharacter.toString();
             }
-            System.out.println("row: " + row);
             if (row.equals(xPlayerReference) || row.equals(oPlayerReference)) {
                 gameComplete = true;
                 return;
             }
         }
 
-        // Check columns
-        String column = "";
+        // Check backend columns
         for (int i = 0; i < game.getGameBoardSize(); i++) {
+            String column = "";
             for (ArrayList<Character> line : playArea) {
-                column = column + line.get(0);
+                column = column + line.get(i);
             }
 
-            System.out.println("column: " + column);
             if (column.equals(xPlayerReference) || column.equals(oPlayerReference)) {
                 gameComplete = true;
                 return;
             }
         }
 
-        // Check diagonals
+        // Check backend diagonals
         String diagonal_tlbr = "";
         String diagonal_trbl = "";
         for (int i = 0; i < game.getGameBoardSize(); i++) {
