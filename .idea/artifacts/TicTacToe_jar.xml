@@ -3,7 +3,6 @@
     <output-path>$PROJECT_DIR$/out/artifacts/TicTacToe_jar</output-path>
     <root id="archive" name="TicTacToe.jar">
       <element id="module-output" name="TicTacToe" />
-      <element id="dir-copy" path="$PROJECT_DIR$/gameFiles" />
     </root>
   </artifact>
 </component>

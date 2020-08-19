@@ -3,9 +3,8 @@ import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -17,14 +16,14 @@ public class GameBoard extends JPanel {
     private JPanel startPagePanel;
     private JPanel gameBoardPanel;
     private JFrame frame;
-    private static String rulesFilepath;
-    private static String boardPieceFilepath;
-    private static String oIconFilepath;
-    private static String xIconFilepath;
+    private static InputStream rulesFilepath;
+    private static InputStream boardPieceFilepath;
+    private static InputStream oIconFilepath;
+    private static InputStream xIconFilepath;
     private static ImageIcon boardIcon;
     private final static Integer windowWidth = 400;
     private final static Integer windowHeight = 400;
-    private final static String gameFileDirectory = "gameFiles" + File.separator;
+    //private final static String gameFileDirectory = "";//""gameFiles" + File.separator;
     private int gameBoardSize;
     int roundCounter = 0;
 
@@ -64,11 +63,16 @@ public class GameBoard extends JPanel {
 
             // Get the images for the player icons.
             try {
+                // Load the stream of the board pieces.
+                boardPieceFilepath = getClass().getClassLoader().getResourceAsStream("gameFiles/tictactoeEmpty.png");
+                oIconFilepath = getClass().getClassLoader().getResourceAsStream("gameFiles/tictactoeOBoard.png");
+                xIconFilepath = getClass().getClassLoader().getResourceAsStream("gameFiles/tictactoeXBoard.png");
+
                 // Set board icon as own variable as it's used in in MouseListener.
-                boardIcon = new ImageIcon(ImageIO.read(new File(gameFileDirectory + boardPieceFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH));
+                boardIcon = new ImageIcon(ImageIO.read(boardPieceFilepath).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH));
                 setIcon(boardIcon);
-                oImage = ImageIO.read(new File(gameFileDirectory + oIconFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
-                xImage = ImageIO.read(new File(gameFileDirectory + xIconFilepath)).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
+                oImage = ImageIO.read(oIconFilepath).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
+                xImage = ImageIO.read(xIconFilepath).getScaledInstance(windowWidth/gameBoardSize, windowHeight/gameBoardSize, Image.SCALE_SMOOTH);
 
             } catch (Exception e) {
                 System.out.println(e.fillInStackTrace());
@@ -188,22 +192,10 @@ public class GameBoard extends JPanel {
 
     private void initialize() {
         try {
-            //ResourceBundle gameFiles = ResourceBundle.getBundle("gameFiles");
-            // TODO: Fix general path to resources when running JAR from terminal
-            rulesFilepath = getClass().getClassLoader().getResource("rulesOfTicTacToe").getPath();
-            rulesFilepath = rulesFilepath.substring(rulesFilepath.lastIndexOf("/") + 1);
-
-            boardPieceFilepath = getClass().getClassLoader().getResource("tictactoeEmpty.png").getPath();
-            boardPieceFilepath = boardPieceFilepath.substring(boardPieceFilepath.lastIndexOf("/") + 1);
-
-            oIconFilepath = getClass().getClassLoader().getResource("tictactoeOBoard.png").getPath();
-            oIconFilepath = oIconFilepath.substring(oIconFilepath.lastIndexOf("/") + 1);
-
-            xIconFilepath = getClass().getClassLoader().getResource("tictactoeXBoard.png").getPath();
-            xIconFilepath = xIconFilepath.substring(xIconFilepath.lastIndexOf("/") + 1);
-
-            // Read the text file onto the start/rules page.
-            theRulesOfTicTextArea.read(new FileReader(gameFileDirectory + rulesFilepath),null);
+            // Read the game rules file as an input stream.
+            rulesFilepath = getClass().getClassLoader().getResourceAsStream("gameFiles/rulesOfTicTacToe");
+            InputStreamReader rulesFileReader = new InputStreamReader(rulesFilepath);
+            theRulesOfTicTextArea.read(rulesFileReader, "");
 
             // Await the start button.
             this.startAGameButton.addActionListener(new ActionListener() {

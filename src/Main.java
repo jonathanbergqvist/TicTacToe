@@ -41,12 +41,16 @@ public class Main {
 
         // The Strings for rows, columns and diagonals was inspired by MeneXia (Xavi Ablaza) at https://gist.github.com/xaviablaza-zz/3844825
 
+        // TODO: Check why victory on middle row won't register
         // Check rows
+        System.out.println(roundCounter);
         for (ArrayList<Character> line : playArea) {
+            System.out.println(line);
             String row = "";
             for (Character singleCharacter : line) {
                 row = row + singleCharacter.toString();
             }
+            System.out.println("row: " + row);
             if (row.equals(xPlayerReference) || row.equals(oPlayerReference)) {
                 gameComplete = true;
                 return;
@@ -60,6 +64,7 @@ public class Main {
                 column = column + line.get(0);
             }
 
+            System.out.println("column: " + column);
             if (column.equals(xPlayerReference) || column.equals(oPlayerReference)) {
                 gameComplete = true;
                 return;
